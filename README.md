@@ -23,16 +23,16 @@ There are three methods that make up the API:
    Takes a non-negative integer and encodes it with Crockford's base-32 encoding.
    Returns a String representing the encoded value.
 
-- Crockford.decode(str : String, encoding : Encoding = Crockford::DEFAULT) : Int64
+- Crockford.decode(str : String, encoding : Encoding = Crockford::DEFAULT) : UInt64
 
    Decodes the given Crockford base-32 encoded string.
    Raises ArgumentError if the encoded string value does not represent a valid encoded value.
-   Returns an Int64 representation of the encoded value.
+   Returns a UInt64 representation of the encoded value.
 
-- Crockford.decode?(str : String, encoding : Encoding = Crockford::DEFAULT) : Int64?
+- Crockford.decode?(str : String, encoding : Encoding = Crockford::DEFAULT) : UInt64?
 
    Decodes the given Crockford base-32 encoded string.
-   Returns an Int64 representation of the encoded value if the encoded string represents a valid encoded  value;
+   Returns a UInt64 representation of the encoded value if the encoded string represents a valid encoded  value;
      otherwise, returns nil.
 
 

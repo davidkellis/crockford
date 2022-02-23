@@ -8,6 +8,12 @@ describe Crockford do
     Crockford.encode(5111).should eq("4ZQ")
     Crockford.encode(65535).should eq("1ZZZ")
     Crockford.encode(123456789012).should eq("3JZ9J6GM")
+    Crockford.encode(18446744073709551615_u64).should eq("FZZZZZZZZZZZZ")
+    
+    Crockford.encode(UInt128::MAX).should eq("7ZZZZZZZZZZZZZZZZZZZZZZZZZ")
+    
+    Crockford.encode(BigInt.new(123)).should eq("3V")
+    Crockford.encode(BigInt.new(UInt128::MAX) ** 2).should eq("1ZZZZZZZZZZZZZZZZZZZZZZZZZG0000000000000000000000001")
   end
 
   it "decodes" do
@@ -20,6 +26,13 @@ describe Crockford do
     Crockford.decode("3JZ9J6GM").should eq(123456789012)
     Crockford.decode("3G923-0VQVS").should eq(123456789012345)
     Crockford.decode("3g923-0vqvs").should eq(123456789012345)
+    Crockford.decode("FZZZZZZZZZZZZ").should eq(18446744073709551615_u64)
+    
+    Crockford.decode128("7ZZZZZZZZZZZZZZZZZZZZZZZZZ").should eq(UInt128::MAX)
+    
+    Crockford.decode_big("3V").should eq(BigInt.new(123))
+    Crockford.decode_big("7ZZZZZZZZZZZZZZZZZZZZZZZZZ").should eq(BigInt.new(UInt128::MAX))
+    Crockford.decode_big("1ZZZZZZZZZZZZZZZZZZZZZZZZZG0000000000000000000000001").should eq(BigInt.new(UInt128::MAX) ** 2)
   end
 
   it "handles zero" do

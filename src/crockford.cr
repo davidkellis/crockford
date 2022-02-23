@@ -1,3 +1,5 @@
+require "big"
+
 # this implements Crockford encoding, as defined at https://www.crockford.com/base32.html
 module Crockford
   extend self
@@ -43,15 +45,35 @@ module Crockford
   # Decodes the given Crockford base-32 encoded string.
   # Raises ArgumentError if the encoded string value does not represent a valid encoded value.
   # Returns an Int64 representation of the encoded value.
-  def decode(str : String, encoding : Encoding = DEFAULT) : Int64
-    clean(str).each_byte.map { |ascii_ord| encoding.decode(ascii_ord) }.reduce(0_i64) { |result, val| (result << 5) + val }
+  def decode(str : String, encoding : Encoding = DEFAULT) : UInt64
+    clean(str).each_byte.map { |ascii_ord| encoding.decode(ascii_ord) }.reduce(0_u64) { |result, val| (result << 5) + val }
+  end
+
+  def decode128(str : String, encoding : Encoding = DEFAULT) : UInt128
+    clean(str).each_byte.map { |ascii_ord| encoding.decode(ascii_ord) }.reduce(0_u128) { |result, val| (result << 5) + val }
+  end
+
+  def decode_big(str : String, encoding : Encoding = DEFAULT) : BigInt
+    clean(str).each_byte.map { |ascii_ord| encoding.decode(ascii_ord) }.reduce(BigInt.new(0)) { |result, val| (result << 5) + val }
   end
 
   # Decodes the given Crockford base-32 encoded string.
   # Returns an Int64 representation of the encoded value if the encoded string represents a valid encoded value;
   #   otherwise, returns nil.
-  def decode?(str : String, encoding : Encoding = DEFAULT) : Int64?
+  def decode?(str : String, encoding : Encoding = DEFAULT) : UInt64?
     decode(str, encoding)
+  rescue ArgumentError
+    nil
+  end
+  
+  def decode128?(str : String, encoding : Encoding = DEFAULT) : UInt128?
+    decode128(str, encoding)
+  rescue ArgumentError
+    nil
+  end
+  
+  def decode_big?(str : String, encoding : Encoding = DEFAULT) : BigInt?
+    decode_big(str, encoding)
   rescue ArgumentError
     nil
   end
@@ -63,6 +85,14 @@ module Crockford
   private def each_base32_digit(num : Int)
     while num > 0
       digit : UInt8 = 0b11111_u8 & num
+      num = num >> 5 # number / 32
+      yield digit
+    end
+  end
+
+  private def each_base32_digit(num : BigInt)
+    while num > 0
+      digit : UInt8 = 0b11111_u8 & num.to_u8!
       num = num >> 5 # number / 32
       yield digit
     end
