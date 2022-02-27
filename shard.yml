@@ -2,7 +2,7 @@ name: crockford
 version: 1.0.0
 
 authors:
-  - yDavid Ellis <david@conquerthelawn.com>
+  - David Ellis <david@conquerthelawn.com>
 
 crystal: 1.3.0
 
